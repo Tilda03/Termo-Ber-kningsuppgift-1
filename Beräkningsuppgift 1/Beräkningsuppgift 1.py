@@ -53,10 +53,6 @@ def work(P, v_range):
     return I
 
 
-data = np.loadtxt("mättnadskurva_kväve.txt")
-v_sat = data[:,2]
-P_sat = data[:,0]
-
 # Ranges for v and for p
 v_ideal_range = compression_to_v_ideal(P_1, R, C, T)
 P_ideal_range = pressure_ideal(R, v_ideal_range, T)
@@ -67,22 +63,39 @@ P_waals_range = pressure_waals(R, v_waals_range, T)
 print(f'Total work for ideal gas law: {work(P_ideal_range, v_ideal_range):.0f} J')
 print(f'Total work for waals gas law: {work(P_waals_range, v_waals_range):.0f} J')
 
+# Saturation curve
+
+# determine volume interval from process
+v_min = min(min(v_ideal_range), min(v_waals_range))
+v_max = max(max(v_ideal_range), max(v_waals_range))
+
+# saturation data load
+
+data = np.loadtxt("mättnadskurva_kväve.txt")
+v_sat = data[:,2]
+P_sat = data[:,0] * 10**3
+
 # plot for ideal and waals
-plt.subplot(1, 2, 1)
+# plt.subplot(1, 2, 1)
 plt.plot(v_ideal_range, P_ideal_range, label='Ideal', color='royalblue')
 plt.plot(v_waals_range, P_waals_range, label='Waals', color='crimson')
+plt.plot(v_sat, P_sat, label='Saturation', color='forestgreen')
 plt.xlabel('Specific volume [m^3/kg]')
 plt.ylabel('Pressure [Pa]')
+plt.xlim(v_min, v_max)
+
 plt.legend()
 plt.grid(True, which="both")
 
-# plot for saturation curve
-plt.subplot(1, 2, 2)
-plt.plot(v_sat, P_sat, label='Saturation', color='forestgreen') 
-plt.xlabel('Specific volume [m^3/s]')
-plt.ylabel('Pressure [kPa]')
-plt.legend()
-plt.xscale('log')
-plt.yscale('log')
-
 plt.show()
+
+# plot for saturation curve
+# plt.subplot(1, 2, 2)
+# plt.plot(v_sat, P_sat, label='Saturation', color='forestgreen') 
+# plt.xlabel('Specific volume [m^3/s]')
+# plt.ylabel('Pressure [Pa]')
+# plt.legend()
+# plt.xscale('log')
+# plt.yscale('log')
+
+
